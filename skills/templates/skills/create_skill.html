@@ -1,0 +1,124 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-0" style="background: rgba(15, 23, 42, 0.95);">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="bi bi-plus-circle" style="font-size: 3rem; color: #facc15;"></i>
+                    <h3 class="mt-2" style="background: linear-gradient(135deg, #facc15, #fde047); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        {% if form.instance.pk %}
+                            Edit Skill
+                        {% else %}
+                            Add New Skill
+                        {% endif %}
+                    </h3>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_name" style="color: #cbd5f5; font-weight: 500; margin-bottom: 8px; display: block;">
+                            <i class="bi bi-tag" style="color: #facc15;"></i> Skill Name
+                        </label>
+                        <input type="text" 
+                               name="name" 
+                               id="id_name" 
+                               class="form-control" 
+                               value="{{ form.name.value|default:'' }}" 
+                               required
+                               style="background-color: #1e293b !important; color: #f1f5f9 !important; border: 1px solid #334155 !important; border-radius: 10px; padding: 10px 14px;">
+                        {% if form.name.errors %}
+                            <small class="text-danger">{{ form.name.errors }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_category" style="color: #cbd5f5; font-weight: 500; margin-bottom: 8px; display: block;">
+                            <i class="bi bi-folder" style="color: #facc15;"></i> Category
+                        </label>
+                        <select name="category" 
+                                id="id_category" 
+                                class="form-control"
+                                style="background-color: #1e293b !important; color: #f1f5f9 !important; border: 1px solid #334155 !important; border-radius: 10px; padding: 10px 14px;">
+                            {% for value, label in form.fields.category.choices %}
+                                <option value="{{ value }}" {% if form.category.value == value %}selected{% endif %} style="background-color: #1e293b; color: #f1f5f9;">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_priority" style="color: #cbd5f5; font-weight: 500; margin-bottom: 8px; display: block;">
+                            <i class="bi bi-flag" style="color: #facc15;"></i> Priority
+                        </label>
+                        <select name="priority" 
+                                id="id_priority" 
+                                class="form-control"
+                                style="background-color: #1e293b !important; color: #f1f5f9 !important; border: 1px solid #334155 !important; border-radius: 10px; padding: 10px 14px;">
+                            {% for value, label in form.fields.priority.choices %}
+                                <option value="{{ value }}" {% if form.priority.value == value %}selected{% endif %} style="background-color: #1e293b; color: #f1f5f9;">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div id="decay-tip" class="mt-2 mb-3" style="color: #94a3b8; padding: 12px; background: rgba(59,130,246,0.1); border-radius: 10px; border-left: 3px solid #facc15;">
+                        <i class="bi bi-info-circle" style="color: #facc15;"></i> Select priority to see decay rate
+                    </div>
+
+                    <button type="submit" class="btn w-100 mt-2" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 600;">
+                        <i class="bi bi-check-circle"></i> 
+                        {% if form.instance.pk %}
+                            Update Skill
+                        {% else %}
+                            Add Skill
+                        {% endif %}
+                    </button>
+                    
+                    <a href="{% url 'dashboard' %}" class="btn w-100 mt-2" style="background: rgba(100, 116, 139, 0.8); color: #e2e8f0; border: none; padding: 12px; border-radius: 10px;">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const priorityField = document.querySelector('#id_priority');
+    const tip = document.getElementById('decay-tip');
+
+    function updateTip() {
+        const value = priorityField.value;
+        
+        let message = '';
+        let icon = '';
+        
+        if (value === 'L') {
+            message = "📉 Low priority → Slow decay (~1% per day) - Best for mastered skills";
+            icon = 'bi bi-arrow-down-circle';
+        } else if (value === 'M') {
+            message = "⚠️ Medium priority → Moderate decay (~2% per day) - Good for regular practice";
+            icon = 'bi bi-arrow-left-right';
+        } else if (value === 'H') {
+            message = "🔥 High priority → Fast decay (~3.5% per day) - Needs frequent practice";
+            icon = 'bi bi-arrow-up-circle';
+        } else {
+            message = "💡 Select priority to see decay rate and practice frequency recommendation";
+            icon = 'bi bi-info-circle';
+        }
+        
+        tip.innerHTML = `<i class="${icon}" style="color: #facc15;"></i> ${message}`;
+        tip.style.color = '#94a3b8';
+    }
+    
+    if (priorityField) {
+        priorityField.addEventListener('change', updateTip);
+        updateTip();
+    }
+});
+</script>
+{% endblock %}

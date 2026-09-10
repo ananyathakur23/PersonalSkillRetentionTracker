@@ -1,0 +1,111 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+
+<div class="hero text-center py-5">
+    <div class="container">
+        <h1 class="display-2 fw-bold mb-3" style="background: linear-gradient(135deg, #facc15, #fde047); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            PSRT
+        </h1>
+
+        <h4 class="text-light mb-3">
+            Personal Skill Retention Tracker
+        </h4>
+
+        <p class="lead text-light-emphasis mb-4" style="color: #cbd5f5 !important;">
+            Track • Improve • Master your skills over time
+        </p>
+
+        {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg mt-2">
+                <i class="bi bi-speedometer2"></i> Enter Dashboard
+            </a>
+        {% else %}
+            <div class="mt-4">
+                <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg me-3">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </a>
+                <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-person-plus"></i> Get Started
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row text-center mb-5 g-4">
+    <div class="col-md-4">
+        <div class="card p-4 h-100">
+            <div class="mb-3">
+                <i class="bi bi-graph-up" style="font-size: 2.5rem;"></i>
+            </div>
+            <h5 class="gold-text fw-bold">Track Retention</h5>
+            <p class="text-secondary" style="color: #94a3b8 !important;">
+                Monitor how well you retain skills using intelligent decay algorithms.
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-4 h-100">
+            <div class="mb-3">
+                <i class="bi bi-bell" style="font-size: 2.5rem;"></i>
+            </div>
+            <h5 class="gold-text fw-bold"> Smart Reminders</h5>
+            <p class="text-secondary" style="color: #94a3b8 !important;">
+                Never forget to practice — get timely alerts for weak skills.
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-4 h-100">
+            <div class="mb-3">
+                <i class="bi bi-pie-chart" style="font-size: 2.5rem;"></i>
+            </div>
+            <h5 class="gold-text fw-bold"> Visual Insights</h5>
+            <p class="text-secondary" style="color: #94a3b8 !important;">
+                Understand your learning progress through powerful analytics.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mb-5">
+    <div class="card p-5 mx-auto" style="max-width: 800px;">
+        <h3 class="gold-text mb-3">About PSRT</h3>
+        <p class="text-secondary" style="color: #94a3b8 !important;">
+            Personal Skill Retention Tracker (PSRT) is designed to help learners
+            maintain long-term mastery of skills. By combining spaced repetition,
+            retention tracking, and smart reminders, PSRT ensures consistent growth.
+        </p>
+    </div>
+</div>
+
+<div class="text-center mb-5">
+    <div class="card p-4 mx-auto" style="max-width: 600px;">
+        <h4 class="gold-text mb-3">Contact</h4>
+        <p class="text-secondary mb-1" style="color: #94a3b8 !important;">
+            <i class="bi bi-person-circle"></i> Created by Ananya Thakur
+        </p>
+        <p class="text-secondary" style="color: #94a3b8 !important;">
+            <i class="bi bi-envelope"></i> ananya.thakur25@pccoepune.org
+        </p>
+    </div>
+</div>
+
+<style>
+.hero {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+}
+.btn-lg {
+    padding: 12px 30px !important;
+    font-size: 1.1rem !important;
+}
+.card p {
+    line-height: 1.6;
+}
+</style>
+{% endblock %}

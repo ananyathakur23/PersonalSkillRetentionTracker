@@ -1,0 +1,140 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+
+<h2 class="mb-3">
+    <i class="bi bi-bar-chart"></i> {{ skill.name }}
+</h2>
+
+<p class="text-muted">
+    Category: {{ skill.get_category_display }} |
+    Priority: {{ skill.get_priority_display }}
+</p>
+
+<div class="card shadow-lg border-0 mb-4">
+    <div class="card-body text-center">
+        <h5>Current Retention</h5>
+        <h2 class="text-success">{{ skill.retention_score }}%</h2>
+    </div>
+</div>
+
+<div class="card shadow-lg border-0 mb-4">
+    <div class="card-body">
+        <h5 class="mb-3">Practice Trend</h5>
+        <canvas id="practiceChart" style="height:300px;"></canvas>
+    </div>
+</div>
+
+<div class="card shadow-lg border-0">
+    <div class="card-body">
+
+        <h5 class="mb-3">Practice History</h5>
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Quality</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.date }}</td>
+                    <td>
+                        <span class="badge bg-primary">
+                            {{ log.get_quality_display }}
+                        </span>
+                    </td>
+                    <td>{{ log.notes|default:"-" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">No logs yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const labels = JSON.parse('{{ dates|escapejs }}');
+    const data = JSON.parse('{{ retention_values|escapejs }}');
+    
+    const ctx = document.getElementById('practiceChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Retention %',
+                data: data,
+                borderColor: '#facc15',
+                backgroundColor: 'rgba(250, 204, 21, 0.1)',
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#facc15',
+                pointBorderColor: '#0f172a',
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Retention (%)',
+                        color: '#94a3b8'
+                    },
+                    grid: {
+                        color: 'rgba(255,255,255,0.1)'
+                    },
+                    ticks: {
+                        color: '#e2e8f0'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date',
+                        color: '#94a3b8'
+                    },
+                    grid: {
+                        color: 'rgba(255,255,255,0.1)'
+                    },
+                    ticks: {
+                        color: '#e2e8f0',
+                        rotation: 45
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#e2e8f0'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Retention: ${context.raw}%`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

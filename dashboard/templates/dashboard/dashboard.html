@@ -1,0 +1,352 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    <i class="bi bi-speedometer2"></i> Dashboard
+</h2>
+
+{% if streak %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card streak-card border-0 shadow-lg mb-3" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <!-- Streak Fire Section -->
+                    <div class="col-md-4 text-center">
+                        <div class="streak-flame">
+                            <span class="streak-icon">{{ streak.streak_level.icon }}</span>
+                            <span class="streak-days display-4 fw-bold text-white">{{ streak.active_streak }}</span>
+                            <span class="streak-label text-white-50">Day Streak</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Streak Info -->
+                    <div class="col-md-4 text-center">
+                        <div class="streak-info">
+                            <div class="badge bg-{{ streak.streak_level.color }} mb-2 p-2">
+                                {{ streak.streak_level.name }} {{ streak.streak_level.icon }}
+                            </div>
+                            <p class="text-white-50 small mb-0">
+                                Longest: {{ streak.longest_streak }} days
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Retention Boost Section -->
+                    <div class="col-md-4 text-center">
+                        <div class="retention-boost">
+                            <h6 class="text-white-50 mb-1">🔥 Retention Boost</h6>
+                            <div class="display-6 fw-bold text-warning">+{{ streak.retention_boost }}%</div>
+                            <p class="small text-white-50 mb-0">
+                                {% if streak.active_streak >= 30 %}
+                                    🏆 Master level! Max boost active!
+                                {% elif streak.active_streak >= 14 %}
+                                    🔥 On Fire! 10% boost active!
+                                {% elif streak.active_streak >= 7 %}
+                                    ⭐ Consistent! 5% boost active!
+                                {% elif streak.active_streak >= 3 %}
+                                    🌱 Keep going! {{ streak.active_streak }}/7 days to 5% boost
+                                {% elif streak.active_streak >= 1 %}
+                                    🌱 Getting started! {{ streak.active_streak }}/7 days to 5% boost
+                                {% else %}
+                                    📖 Practice today to start your streak!
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Progress to next milestone -->
+                <div class="mt-3">
+                {% if streak.active_streak < 7 %}
+                <div class="d-flex justify-content-between small text-white-50 mb-1">
+                    <span>📖 Starting</span>
+                    <span>⭐ {{ streak.active_streak }}/7 days to boost</span>
+                </div>
+                <div class="progress" style="height: 6px;">
+                    <div class="progress-bar bg-warning" style="width: {% widthratio streak.active_streak 7 100 %}%;"></div>
+                </div>
+                {% elif streak.active_streak < 14 %}
+                <div class="d-flex justify-content-between small text-white-50 mb-1">
+                    <span>⭐ Consistent</span>
+                    <span>🔥 {{ streak.active_streak }}/14 days for 10% boost</span>
+                </div>
+                <div class="progress" style="height: 6px;">
+                    <div class="progress-bar bg-orange" style="width: {% widthratio streak.active_streak 14 100 %}%;"></div>
+                </div>
+                {% elif streak.active_streak < 30 %}
+                <div class="d-flex justify-content-between small text-white-50 mb-1">
+                    <span>🔥 On Fire</span>
+                    <span>🏆 {{ streak.active_streak }}/30 days for 15% boost</span>
+                </div>
+                <div class="progress" style="height: 6px;">
+                    <div class="progress-bar bg-danger" style="width: {% widthratio streak.active_streak 30 100 %}%;"></div>
+                </div>
+                {% else %}
+                <div class="d-flex justify-content-between small text-white-50 mb-1">
+                    <span>🏆 Master</span>
+                    <span>🔥 {{ streak.active_streak }} days - MAX BOOST!</span>
+                </div>
+                <div class="progress" style="height: 6px;">
+                    <div class="progress-bar bg-gold" style="width: 100%;"></div>
+                </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row mb-4">
+
+  <div class="col-md-4">
+    <div class="card shadow-lg border-0 text-center h-100">
+      <div class="card-body py-4">
+        <h5><i class="bi bi-list-check"></i> Total Skills</h5>
+        <h3>{{ total_skills }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-lg border-0 text-center h-100">
+      <div class="card-body py-4">
+        <h5><i class="bi bi-graph-up"></i> Average Retention</h5>
+        <h3>{{ avg_retention }}%</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-lg border-0 text-center h-100">
+      <div class="card-body py-4">
+        <h5><i class="bi bi-exclamation-triangle"></i> At Risk Skills</h5>
+        <h3 class="text-danger">{{ at_risk_count }}</h3>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% if at_risk_count > 0 %}
+<div class="alert alert-danger d-flex justify-content-between align-items-center">
+    <span>
+        ⚠ {{ at_risk_count }} skill{{ at_risk_count|pluralize }} need practice
+    </span>
+    <a href="{% url 'skills_list' %}" class="btn btn-sm btn-light">
+        View Skills
+    </a>
+</div>
+{% endif %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3>Your Skills</h3>
+  <a href="{% url 'create_skill' %}" class="btn btn-primary">
+    + Add Skill
+  </a>
+</div>
+
+<div class="card shadow-lg border-0 mb-4">
+    <div class="card-body">
+        <h5 class="mb-3">Retention Overview</h5>
+        <canvas id="retentionChart" style="height: 300px;"></canvas>
+    </div>
+</div>
+
+<div class="card shadow-lg border-0">
+    <div class="card-body">
+        <h5 class="mb-3">Your Skills</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Retention</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Last Practice</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for skill in skills %}
+                    <tr>
+                        <!-- Name -->
+                        <td>
+                            <a href="{% url 'skill_detail' skill.id %}" class="fw-bold gold-text">
+                                {{ skill.name }}
+                            </a>
+                        </td>
+                        
+                        <!-- Category -->
+                        <td>
+                            <span class="badge bg-info">
+                                {{ skill.get_category_display }}
+                            </span>
+                        </td>
+                        
+                        <!-- Retention with Progress Bar -->
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: {{ skill.retention_score }}%;">
+                                    </div>
+                                </div>
+                                <span class="small">{{ skill.retention_score }}%</span>
+                            </div>
+                        </td>
+                        
+                        <!-- Priority -->
+                        <td>
+                            {% if skill.priority == 'H' %}
+                                <span class="badge bg-danger">HIGH</span>
+                            {% elif skill.priority == 'M' %}
+                                <span class="badge bg-warning text-dark">MEDIUM</span>
+                            {% else %}
+                                <span class="badge bg-success">LOW</span>
+                            {% endif %}
+                        </td>
+                        
+                        <!-- Status -->
+                        <td>
+                            {% if skill.retention_score < 30 %}
+                                <span class="badge bg-danger">Critical</span>
+                            {% elif skill.retention_score < 50 %}
+                                <span class="badge bg-warning text-dark">At Risk</span>
+                            {% elif skill.retention_score < 70 %}
+                                <span class="badge bg-info text-dark">Declining</span>
+                            {% else %}
+                                <span class="badge bg-success">Healthy ✓</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td class="text-muted small">
+                            {% if skill.days_since_last_practice == 0 %}
+                                Today
+                            {% elif skill.days_since_last_practice == 1 %}
+                                1 day ago
+                            {% else %}
+                                {{ skill.days_since_last_practice }} days ago
+                            {% endif %}
+                        </td>
+                        
+                        <!-- Actions -->
+                        <td class="text-nowrap">
+                            <a href="{% url 'edit_skill' skill.id %}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                            <a href="{% url 'delete_skill' skill.id %}" class="btn btn-sm btn-outline-danger me-1">Delete</a>
+                            <a href="{% url 'add_practice' skill.id %}" class="btn btn-sm btn-outline-success">Practice</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <h5>No skills added yet</h5>
+                            <p class="text-muted">Start tracking your learning journey 🚀</p>
+                            <a href="{% url 'create_skill' %}" class="btn btn-primary mt-2">
+                                + Add First Skill
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const bars = document.querySelectorAll('.progress-bar-width');
+        bars.forEach(function(bar) {
+            let width = bar.getAttribute('data-width');
+            bar.style.width = width + '%';
+        });
+        
+        const labels = JSON.parse('{{ skill_names|escapejs }}');
+        const data = JSON.parse('{{ retention_scores|escapejs }}');
+
+        const ctx = document.getElementById('retentionChart').getContext('2d');
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Retention %',
+                    data: data,
+                    backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 1,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            color: 'rgba(255,255,255,0.1)'
+                        },
+                        ticks: {
+                            color: '#e2e8f0'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255,255,255,0.1)'
+                        },
+                        ticks: {
+                            color: '#e2e8f0'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#e2e8f0'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+<style>
+    .streak-card {
+        transition: transform 0.3s ease;
+    }
+    .streak-card:hover {
+        transform: translateY(-5px);
+    }
+    .streak-icon {
+        font-size: 3rem;
+        display: block;
+    }
+    .streak-days {
+        font-size: 3rem;
+        font-weight: bold;
+        line-height: 1;
+    }
+    .bg-gold {
+        background: linear-gradient(135deg, #ffd700, #ffb347);
+    }
+    .bg-orange {
+        background: linear-gradient(135deg, #ff6b35, #f7931e);
+    }
+    .bg-blue {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+    .bg-green {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+    .bg-gray {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+    }
+</style>
+{% endblock %}
